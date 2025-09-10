@@ -1,11 +1,14 @@
-const express = require('express')
+const express = require('express');
 
-const app = express()
-app.use(express.json())
+const app = express();
+app.use(express.json());
 
-const articleRoutes = require('./routes/articles')
-app.use('/', articleRoutes)
+const articleRouter = require('./routers/article');
+const authorRouter = require('./routers/author');
 
-app.listen(3001, () => {
-    console.log('App is started at http://localhost:3001')
-})
+app.use('/', articleRouter);
+app.use('/author/', authorRouter);
+
+app.listen(3025, () => {
+    console.log('Server running on http://localhost:3025');
+});
