@@ -10,6 +10,6 @@ const authorRouter = require('./routers/author');
 app.use('/', articleRouter);
 app.use('/author/', authorRouter);
 
-app.listen(3027, () => {
-    console.log('Server running on http://localhost:3027');
+app.listen(3059, () => {
+    console.log('Server running on http://localhost:3059');
 });
