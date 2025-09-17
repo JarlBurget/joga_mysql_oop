@@ -4,6 +4,9 @@ const router = express.Router();
 const articleControllerClass  = require('../controllers/article');
 const articleController = new articleControllerClass();
 
+const { requireAdmin } = require('../middleware/authorize');
+
+
 // GET / - get all articles
 router.get('/', (req, res) => {
     articleController.getAllArticles(req, res);

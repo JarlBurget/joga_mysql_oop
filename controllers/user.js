@@ -18,7 +18,8 @@ class UserController {
             const userData = {
                 username: req.body.username,
                 email: req.body.email,
-                password: cryptPassword
+                password: cryptPassword,
+                role: req.body.role || 'user' // default role
             };
             
             const registeredId = await userModel.create(userData);
@@ -27,7 +28,8 @@ class UserController {
                 const user = await userModel.findById(registeredId);
                 req.session.user = {
                     username: user.username,
-                    user_id: user.id
+                    user_id: user.id,
+                    role: user.role
                 };
                 res.json({ 
                     message: 'New user is registered', 
@@ -40,7 +42,7 @@ class UserController {
         }
     }
 
-     async login(req, res) {
+    async login(req, res) {
         try {
             const user = await userModel.findOne(req.body.username);
             if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
@@ -49,18 +51,20 @@ class UserController {
 
             req.session.user = {
                 username: user.username,
-                user_id: user.id
+                user_id: user.id,
+                role: user.role
             };
 
             res.json({ 
-                    message: 'User is logged in', 
-                    user: req.session.user 
-                });
+                message: 'User is logged in', 
+                user: req.session.user 
+            });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
 
     async logout(req, res) {
         try {
