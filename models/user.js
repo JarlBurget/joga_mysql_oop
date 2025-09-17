@@ -1,17 +1,14 @@
 const BaseSQLModel = require('./base');
 
-class User extends BaseSQLModel {
+class UserModel extends BaseSQLModel {
     constructor() {
-        super('users'); // MySQL tabeli nimi
+        super('users');
     }
 
-    async findById(id) {
-        return await super.findById(id);
-    }
-
-    async create(data) {
-        return await super.create(data);
+    async findOne(username) {
+        const result = await super.findOne('username', username);
+        return result;
     }
 }
 
-module.exports = User;
+module.exports = UserModel;

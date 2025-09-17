@@ -1,68 +1,81 @@
+const ArticleModel = require('../models/article');
 const articleDbModel = require('../models/article');
 const articleModel = new articleDbModel();
 
 class articleController {
-    constructor() {
-        const articles = []
-    }
-
     async getAllArticles(req, res) {
-        const articles = await articleModel.findAll();
-        res.status(201).json({articles: articles});
-        res.status(500).json({ error: 'Error fetching articles' });
+        try {
+            const articles = await articleModel.findAll();
+            res.status(201).json({articles: articles } );
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to fetch articles' });
+        }
     }
 
     async getArticleBySlug(req, res) {
-        const article = await articleModel.findOne(req.params.slug);
-        res.status(201).json({ article: article });
+        try {
+            const article = await articleModel.findOne(req.params.slug);
+            res.status(201).json({article: article } );
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to fetch article data' });
+        }
     }
 
     async createNewArticle(req, res) {
-        const newArticle = {
-            name: req.body.name,
-            slug: req.body.slug,
-            image: req.body.image,
-            body: req.body.body,
-            published: new Date().toISOString().slice(0, 19).replace('T',' '),
-            author_id: req.body.author_id,
+        try {
+            const newArticle = {
+                name: req.body.name,
+                slug: req.body.slug,
+                image: req.body.image,
+                body: req.body.body,
+                published: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                author_id: req.body.author_id
+            };
+            const insertId = await articleModel.create(newArticle);
+            const createdArticle = await articleModel.findById(insertId);
+            res.status(201).json({ article: createdArticle });
+            
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to create article' });
         }
-        const articleId = await articleModel.create(newArticle);
-        res.status(201).json({ 
-            message: `Article created successfully with id ${articleId}`,
-            article: {id: articleId, ...newArticle} });
     }
 
     async updateArticle(req, res) {
-        
-        const articleId = req.params.id;
-        const updatedArticle = Object.fromEntries(
-            Object.entries(req.body).filter(([_, value]) => value !== undefined)
-        );
-        const result = await articleModel.update(req.params.id, updatedArticle);
-        res.status(201).json({
-            message: `Article with id ${articleId} updated successfully`,
-            article: {id: articleId, ...updatedArticle} })
-            .catch(error => {
-                console.log(error);
-                res.status(500).json({ error: 'Error updating article' });
-            });
-    }
-    async deleteArticle(req, res) {
         try {
-            const id = req.params.id;
-            const affectedRows = await articleModel.delete(id);
-            if (affectedRows === 0) {
-                res.status(404).json({message: 'Article not found'});
-            } else {
-                res.status(200).json({message: 'Article deleted', affectedRows: affectedRows});
-            }
+            const articleId = req.params.id;
+            const articleData = req.body;
+
+            await articleModel.update(articleId, articleData);
+
+            res.status(200).json({
+                message: `Article with ID ${articleId} updated successfully.`,
+                article: { id: articleId, ...articleData }
+            });
         } catch (error) {
-            res.status(500).json({message: 'Error deleting article', error: error.message});
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
         }
     }
 
-    
-}
+    async deleteArticle(req, res) {
+        try {
+            const articleId = req.params.id;
 
+            const affectedRows = await articleModel.delete(articleId);
+
+            if (affectedRows === 0) {
+                return res.status(404).json({ message: 'Article not found' });
+            }
+
+            res.status(200).json({
+                message: `Article with ID ${articleId} deleted successfully.`
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+}
 
 module.exports = articleController;

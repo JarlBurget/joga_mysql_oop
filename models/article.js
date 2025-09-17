@@ -1,38 +1,19 @@
 const BaseSQLModel = require('./base');
 
-class articleModel extends BaseSQLModel {
+class ArticleModel extends BaseSQLModel {
     constructor() {
-        super('article'); 
-    }
-
-    async findAll() {
-        const articles = await super.findAll();
-        return articles
+        super('article');
     }
 
     async findOne(slug) {
-        const article = await super.findOne('slug', slug);
-        return article
+        const result = await super.findOne('slug', slug);
+        return result;
     }
 
     async findMany(author) {
-        const authors = await super.findMany('author_id', author.id);
-        return authors
+        const result = await super.findMany('author_id', author.id);
+        return result;
     }
+} 
 
-    async create(article) {
-        const createdArticleId = await super.create(article);
-        return createdArticleId
-    }
-
-    async update(id, article) {
-        const updatedArticle = await super.update(id, article);
-        return updatedArticle
-    }
-    async delete(id) {
-    const affectedRows = await super.delete(id);
-    return affectedRows;
-  }
-}
-
-module.exports = articleModel;
+module.exports = ArticleModel;
