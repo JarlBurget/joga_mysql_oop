@@ -36,6 +36,6 @@ app.use('/', articleRouter);
 app.use('/author/', authorRouter);
 app.use('/users/', userRoutes);
 
-app.listen(3026, () => {
-    console.log('Server running on http://localhost:3026');
+app.listen(3023, () => {
+    console.log('Server running on http://localhost:3023');
 });
