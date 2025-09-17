@@ -18,8 +18,7 @@ class UserController {
             const userData = {
                 username: req.body.username,
                 email: req.body.email,
-                password: cryptPassword,
-                role: req.body.role || 'user' // default role
+                password: cryptPassword
             };
             
             const registeredId = await userModel.create(userData);
@@ -28,8 +27,7 @@ class UserController {
                 const user = await userModel.findById(registeredId);
                 req.session.user = {
                     username: user.username,
-                    user_id: user.id,
-                    role: user.role
+                    user_id: user.id
                 };
                 res.json({ 
                     message: 'New user is registered', 
@@ -42,7 +40,7 @@ class UserController {
         }
     }
 
-    async login(req, res) {
+     async login(req, res) {
         try {
             const user = await userModel.findOne(req.body.username);
             if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
@@ -51,24 +49,21 @@ class UserController {
 
             req.session.user = {
                 username: user.username,
-                user_id: user.id,
-                role: user.role
+                user_id: user.id
             };
 
             res.json({ 
-                message: 'User is logged in', 
-                user: req.session.user 
-            });
+                    message: 'User is logged in', 
+                    user: req.session.user 
+                });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
         }
     }
 
-
     async logout(req, res) {
         try {
-            console.log(req.session);
             if (!req.session) {
                 return res.status(200).json({ message: 'Already logged out' });
             }
@@ -78,7 +73,6 @@ class UserController {
                 }
                 res.json({ message: 'User is logged out' });
             });
-            console.log(req.session);
         }   catch (error) {     
             res.json({ message: 'Internal server error' });
         }   

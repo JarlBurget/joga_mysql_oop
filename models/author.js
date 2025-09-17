@@ -1,3 +1,4 @@
+
 const BaseSQLModel = require('./base');
 
 class AuthorModel extends BaseSQLModel {
